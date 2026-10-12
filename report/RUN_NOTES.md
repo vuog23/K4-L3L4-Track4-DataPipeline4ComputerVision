@@ -6,3 +6,5 @@
 - Windows host scripts run with Python's UTF-8 mode (`-X utf8`). The supplied Bash wrapper's Docker commands can also be called directly from PowerShell.
 - The dataset zip was originally tracked in the instructor repository. It is retained locally and excluded from the submitted checkout.
 - Protected instructor files (`tests/`, `pipeline/verify.py`, `docker-compose.yml`) remain unchanged.
+- Restored the instructor's LF bytes after Windows checkout converted files to CRLF; normalized protected-file hashes match the supplied `scripts/protected.json`. `.gitattributes` preserves LF for Linux scripts and protected source files.
+- Recovery selection: `2202602422 % 26 = 20`; sorted trip at that index: `trip-07774`.
