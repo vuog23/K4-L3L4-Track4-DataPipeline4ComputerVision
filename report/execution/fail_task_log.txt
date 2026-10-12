@@ -1,0 +1,46 @@
+Back to Dynamic Task Summary
+All Levels
+All File Sources
+Wrap
+Download
+See More
+915db1729005
+ ▶ Log message source details
+[2026-10-12, 18:30:28 UTC] {local_task_job_runner.py:123} ▶ Pre task execution logs
+[2026-10-12, 18:30:29 UTC] {subprocess.py:78} INFO - Tmp dir root location: /tmp
+[2026-10-12, 18:30:29 UTC] {subprocess.py:88} INFO - Running command: ['/usr/bin/bash', '-c', 'cd /opt/*** && /home/airflow/***-venv/bin/python -m pipeline.cli extract --trip trip-07774']
+[2026-10-12, 18:30:29 UTC] {subprocess.py:99} INFO - Output:
+[2026-10-12, 18:30:30 UTC] {subprocess.py:106} INFO - Traceback (most recent call last):
+[2026-10-12, 18:30:30 UTC] {subprocess.py:106} INFO -   File "<frozen runpy>", line 198, in _run_module_as_main
+[2026-10-12, 18:30:30 UTC] {subprocess.py:106} INFO -   File "<frozen runpy>", line 88, in _run_code
+[2026-10-12, 18:30:30 UTC] {subprocess.py:106} INFO -   File "/opt/***/pipeline/cli.py", line 65, in <module>
+[2026-10-12, 18:30:30 UTC] {subprocess.py:106} INFO -     rc = main()
+[2026-10-12, 18:30:30 UTC] {subprocess.py:106} INFO -          ^^^^^^
+[2026-10-12, 18:30:30 UTC] {subprocess.py:106} INFO -   File "/opt/***/pipeline/cli.py", line 59, in main
+[2026-10-12, 18:30:30 UTC] {subprocess.py:106} INFO -     out = frames.extract_trip(a.trip)
+[2026-10-12, 18:30:30 UTC] {subprocess.py:106} INFO -           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[2026-10-12, 18:30:30 UTC] {subprocess.py:106} INFO -   File "/opt/***/pipeline/frames.py", line 66, in extract_trip
+[2026-10-12, 18:30:30 UTC] {subprocess.py:106} INFO -     _fail_once(trip_id)
+[2026-10-12, 18:30:30 UTC] {subprocess.py:106} INFO -   File "/opt/***/pipeline/frames.py", line 61, in _fail_once
+[2026-10-12, 18:30:30 UTC] {subprocess.py:106} INFO -     raise RuntimeError(f"simulated crash while extracting {trip_id}; run it again")
+[2026-10-12, 18:30:30 UTC] {subprocess.py:106} INFO - RuntimeError: simulated crash while extracting trip-07774; run it again
+[2026-10-12, 18:30:30 UTC] {subprocess.py:110} INFO - Command exited with return code 1
+[2026-10-12, 18:30:30 UTC] {taskinstance.py:3313} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/models/taskinstance.py", line 768, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/models/taskinstance.py", line 734, in _execute_callable
+    return ExecutionCallableRunner(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/utils/operator_helpers.py", line 252, in run
+    return self.func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/models/baseoperator.py", line 424, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/airflow/operators/bash.py", line 276, in execute
+    raise AirflowException(
+airflow.exceptions.AirflowException: Bash command failed. The command returned a non-zero exit code 1.
+[2026-10-12, 18:30:30 UTC] {taskinstance.py:1226} INFO - Marking task as FAILED. dag_id=day09_video_pipeline, task_id=silver_frames, run_id=***-recovery-trip-07774, map_index=20, execution_date=20261012T182928, start_date=20261012T183029, end_date=20261012T183030
+[2026-10-12, 18:30:30 UTC] {taskinstance.py:341} ▶ Post task execution logs
