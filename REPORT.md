@@ -16,7 +16,7 @@ MSSV có chữ A nên không dùng trực tiếp được lệnh `int(MSSV)` c�
 - `dataset_version` của bạn: `33420e167f7d` (đối chiếu `report/evidence/run_summary.json`).
 - Số khung hình train / val / test của bạn: **685 / 179 / 155**, tổng **1.019**; số trip tương ứng **18 / 4 / 4**.
 - Bronze: 3.021 dòng A, 3.234 dòng B, 26 trip, 2 video. Silver: 1.246 frame lấy mẫu ở 2 fps. Chín unit test đều đạt; warehouse có 6 mart và 1.019 dòng gallery.
-- `report/verify.txt` lưu đầu ra nguyên bản của lệnh verify, yêu cầu `27/27 checks passed`.
+- `report/verify.txt` lưu đầu ra verify: **27/27 checks passed**. Lượt cuối chạy từ lake trống, cả năm bước đạt và `verify_all_passed = true`.
 - Ảnh trong `report/screenshots/`: `airflow_graph.jpg`, `minio_lake.jpg`, `metabase_dashboard.jpg`, `metabase_personal_sql.jpg`, `fail_task_log.jpg`, `airflow_clear_scope.jpg`, `airflow_retry_graph.jpg`.
 
 | Drive | Train: frame / trip | Val: frame / trip | Test: frame / trip |
@@ -72,7 +72,7 @@ Khung hình **đen** và khung hình **tối** khác nhau thế nào, pipeline x
 | 2 | 149 | 53 |
 | 6 | 363 | 244 |
 
-Khung đen có brightness dưới **12**, thường là mất hình; khung tối có brightness từ **12 đến dưới 40**, vẫn có thể chứa cảnh trong bóng râm/đường hầm. Silver giữ frame và gắn cờ. Gold bỏ đen, mờ, gần trùng hoặc mất đồng bộ, nhưng không loại chỉ vì `is_dark`; tôi đồng ý vì bỏ mọi cảnh tối sẽ làm mất điều kiện vận hành quan trọng. A có 6 frame đen, 4 frame tối; B có 4 frame đen, 61 frame tối. Cờ có thể chồng lấp nên frame tối vẫn có thể bị loại vì một lý do khác.
+Khung đen có brightness dưới **12**, thường là mất hình; khung tối có brightness từ **12 đến dưới 40**, vẫn có thể chứa cảnh trong bóng râm/đường hầm. Silver giữ frame và gắn cờ. Gold bỏ đen, mờ, gần trùng hoặc mất đồng bộ, nhưng không loại chỉ vì `is_dark`; tôi đồng ý vì bỏ mọi cảnh tối sẽ làm mất điều kiện vận hành quan trọng. A có 6 frame đen, 4 frame tối; B có 4 frame đen, 61 frame tối. Trong Gold giữ **4/4** frame tối A và **58/61** frame tối B: ba frame tối B bị loại vì cờ chất lượng khác. Nguồn: `final_snapshot.json`.
 
 Tôi giữ ngưỡng **2** cho lượt nộp: ngưỡng 0 bỏ sót nhiều frame gần giống nhau, còn 6 coi **607/1.246 frame** là trùng, dễ mất cảnh thay đổi thật. Xe chậm/camera đứng hình làm ảnh liền nhau ít đổi nên Hamming thường nhỏ; xe nhanh có thể thay cảnh nhanh hơn. dHash là heuristic, cần đối chiếu ảnh và tốc độ để chọn ngưỡng, không diễn giải số bit như chất lượng ngữ nghĩa. Số liệu lấy từ `threshold.json`.
 
@@ -97,7 +97,20 @@ MSSV đầy đủ `2A202602422` được nối với trip_id trong `md5` để x
 
 Dataset lấy từ `drive_a.mp4`, `drive_b.mp4` của gói lab L2D-v3 camera front_left, qua telemetry A/B và metadata trip. `manifest.json` ghi version của `bronze.raw_telemetry_a`, `bronze.raw_telemetry_b`, `bronze.trips_raw`, `bronze.video_files`, `silver.frames`, `silver.telemetry`, `silver.frames_flagged`, `silver.frame_telemetry`, cùng SHA256 của hai video. Bản manifest lượt cuối được lưu nguyên nội dung ở `report/evidence/dataset_manifest.json`.
 
-Sau ba tháng cần giữ video/CSV đúng checksum trong `data/MANIFEST.json`, MSSV đầy đủ, code và cấu hình lấy mẫu/chất lượng/split, cùng snapshot Delta được chỉ trong lineage nếu dùng time travel. `dataset_version` đối chiếu frame/split; `manifest_sha256` đối chiếu manifest Parquet. Chỉ số version mà thiếu file log/data tương ứng không đủ để khôi phục. Các version và checksum cụ thể của lượt cuối được bổ sung bên dưới sau khi kiểm tra.
+Sau ba tháng cần giữ video/CSV đúng checksum trong `data/MANIFEST.json`, MSSV đầy đủ, code và cấu hình lấy mẫu/chất lượng/split, cùng snapshot Delta được chỉ trong lineage nếu dùng time travel. `dataset_version` đối chiếu frame/split; `manifest_sha256` đối chiếu manifest Parquet. Chỉ số version mà thiếu file log/data tương ứng không đủ để khôi phục.
+
+| Bảng upstream trong manifest lượt cuối | Delta version |
+|---|---:|
+| bronze.raw_telemetry_a | 0 |
+| bronze.raw_telemetry_b | 0 |
+| bronze.trips_raw | 0 |
+| bronze.video_files | 1 |
+| silver.frames | 25 |
+| silver.telemetry | 0 |
+| silver.frames_flagged | 0 |
+| silver.frame_telemetry | 0 |
+
+SHA256 video A: `636ba1a98dfc5ba665d1c935e1d2064e69f4df360ff9ffbd15795957d5e7e9aa`; B: `bfa62703f645ff77a8578ae3fc74a00881140d38a404d43c8e2af265bbee9fdc`. SHA256 manifest Parquet: `babd3ffd1f4ed55fed30f65c26bb38168adabdc6fd0b67855dc4a8ae364772f5`. Các giá trị này lấy trực tiếp từ `dataset_manifest.json` của lượt cuối.
 
 ## Bước 5 · Điều phối và phục vụ
 
